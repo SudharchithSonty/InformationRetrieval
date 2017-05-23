@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="twitter_schema" version="1.5">
+    <field name="_version_" type="long" indexed="true" stored="true"/>
+    <field name="_root_" type="string" indexed="true" stored="false"/>
+
+    <field name="id" type="long" indexed="true" stored="true" required="true"/>
+    <field name="serialversionuid" type="string" indexed="false" stored="false"/>
+    <field name="text_en" type="text_en_data" indexed="true" stored="true" omitNorms="true"/>
+    <field name="text_de" type="text_de_data" indexed="true" stored="true" omitNorms="true"/>
+    <field name="text_ru" type="text_ru_data" indexed="true" stored="true" omitNorms="true"/>
+    <field name="lang" type="string" indexed="true" stored="true"/>
+    <field name="created_at" type="tdate" indexed="true" stored="true"/>
+    <field name="tweet_urls" type="text_generalized" indexed="true" stored="true" multiValued="true"/>
+    <field name="tweet_hashtags" type="text_generalized" indexed="true" stored="true" multiValued="true"/>
+
+    <uniqueKey>id</uniqueKey>
+
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" />
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tdate" class="solr.TrieDateField" precisionStep="6" positionIncrementGap="0"/>
+
+    <fieldType name="text_en_data" class="solr.TextField" positionIncrementGap="100">
+        <analyzer type="index">
+            <tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+            <filter class="solr.PorterStemFilterFactory"/>
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+            <filter class="solr.PorterStemFilterFactory"/>
+        </analyzer>
+    </fieldType>
+
+    <fieldType name="text_de_data" class="solr.TextField" positionIncrementGap="100">
+        <analyzer type="index">
+            <tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_de.txt" format="snowball"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+            <filter class="solr.GermanNormalizationFilterFactory"/>
+            <filter class="solr.SnowballPorterFilterFactory" language="German2"/>
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_de.txt" format="snowball"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+            <filter class="solr.GermanNormalizationFilterFactory"/>
+            <filter class="solr.SnowballPorterFilterFactory" language="German2"/>
+        </analyzer>
+    </fieldType>
+
+    <fieldType name="text_ru_data" class="solr.TextField" positionIncrementGap="100">
+        <analyzer type="index">
+            <tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_ru.txt" format="snowball"/>
+            <filter class="solr.SnowballPorterFilterFactory" language="Russian"/>
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.UAX29URLEmailTokenizerFactory"/>
+            <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_ru.txt"/>
+            <filter class="solr.SnowballPorterFilterFactory" language="Russian"/>
+        </analyzer>
+    </fieldType>
+
+    <fieldType name="text_generalized" class="solr.TextField" positionIncrementGap="100">
+        <analyzer type="index">
+            <tokenizer class="solr.ClassicTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+        <analyzer type="query">
+            <tokenizer class="solr.StandardTokenizerFactory"/>
+            <filter class="solr.LowerCaseFilterFactory"/>
+        </analyzer>
+    </fieldType>
+</schema>
